@@ -11,6 +11,7 @@ import {
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import api from "@/services/api";
+import { GtcIcon } from "@/components/icons/GtcIcon";
 
 interface ScanLog {
   id: string;
@@ -161,22 +162,24 @@ export default function ScannerScreen() {
         {/* Alternador de Modo */}
         <View style={styles.modeToggleContainer}>
           <TouchableOpacity
-            style={[styles.modeButton, scanMode === "patron" && styles.modeButtonActive]}
+            style={[styles.modeButton, scanMode === "patron" && styles.modeButtonActive, { flexDirection: "row", gap: 6, alignItems: "center", justifyContent: "center" }]}
             onPress={() => {
               setScanMode("patron");
               setSelectedPatron(null);
             }}
           >
+            <GtcIcon name="users" size={16} color={scanMode === "patron" ? "#fff" : "#64748b"} />
             <Text style={[styles.modeButtonText, scanMode === "patron" && styles.modeButtonTextActive]}>
-              👥 Identificar Leitor
+              Identificar Leitor
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.modeButton, scanMode === "book" && styles.modeButtonActive]}
+            style={[styles.modeButton, scanMode === "book" && styles.modeButtonActive, { flexDirection: "row", gap: 6, alignItems: "center", justifyContent: "center" }]}
             onPress={() => setScanMode("book")}
           >
+            <GtcIcon name="scanner" size={16} color={scanMode === "book" ? "#fff" : "#64748b"} />
             <Text style={[styles.modeButtonText, scanMode === "book" && styles.modeButtonTextActive]}>
-              📚 Escanear Livros
+              Escanear Livros
             </Text>
           </TouchableOpacity>
         </View>
@@ -210,9 +213,12 @@ export default function ScannerScreen() {
           ) : (
             logs.map((log) => (
               <View key={log.id} style={styles.logRow}>
-                <Text style={styles.logType}>
-                  {log.type === "loan" ? "🔄 EMP" : "↩️ DEV"}
-                </Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 4, width: 55 }}>
+                  <GtcIcon name={log.type === "loan" ? "loan" : "return"} size={14} color={log.type === "loan" ? "#38bdf8" : "#34d399"} />
+                  <Text style={styles.logType}>
+                    {log.type === "loan" ? "EMP" : "DEV"}
+                  </Text>
+                </View>
                 <View style={{ flex: 1, marginHorizontal: 12 }}>
                   <Text style={styles.logBarcode} numberOfLines={1}>
                     {log.barcode}
