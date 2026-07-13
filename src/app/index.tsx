@@ -1,13 +1,13 @@
 import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { WebBadge } from '@/components/web-badge';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { useAppTheme } from '@/contexts/ThemeContext';
 
 function getDevMenuHint() {
   if (Platform.OS === 'web') {
@@ -29,30 +29,50 @@ function getDevMenuHint() {
 }
 
 export default function HomeScreen() {
+  const { theme, setTheme } = useAppTheme();
+
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <ThemedView style={styles.heroSection}>
           <AnimatedIcon />
           <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
+            Gnuteca Staff
+          </ThemedText>
+          <ThemedText type="small" style={{ color: '#94a3b8', textTransform: 'uppercase', letterSpacing: 1.5, fontWeight: '700' }}>
+            Painel do Bibliotecário
           </ThemedText>
         </ThemedView>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
+        <ThemedText type="defaultSemiBold" style={styles.label}>
+          Configuração de Tema
         </ThemedText>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
+        <ThemedView type="backgroundElement" style={styles.themeSelectorContainer}>
+          <TouchableOpacity
+            style={[styles.themeOptionButton, theme === 'light' && styles.themeOptionActive]}
+            onPress={() => setTheme('light')}
+          >
+            <ThemedText style={[styles.themeOptionText, theme === 'light' && styles.themeOptionTextActive]}>
+              Claro
+            </ThemedText>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.themeOptionButton, theme === 'intermediate' && styles.themeOptionActive]}
+            onPress={() => setTheme('intermediate')}
+          >
+            <ThemedText style={[styles.themeOptionText, theme === 'intermediate' && styles.themeOptionTextActive]}>
+              Suave
+            </ThemedText>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.themeOptionButton, theme === 'dark' && styles.themeOptionActive]}
+            onPress={() => setTheme('dark')}
+          >
+            <ThemedText style={[styles.themeOptionText, theme === 'dark' && styles.themeOptionTextActive]}>
+              Escuro
+            </ThemedText>
+          </TouchableOpacity>
         </ThemedView>
 
         {Platform.OS === 'web' && <WebBadge />}
@@ -94,5 +114,40 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.four,
     borderRadius: Spacing.four,
+  },
+  label: {
+    alignSelf: 'flex-start',
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#94a3b8',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: 4,
+    paddingLeft: Spacing.one,
+  },
+  themeSelectorContainer: {
+    flexDirection: 'row',
+    alignSelf: 'stretch',
+    borderRadius: Spacing.three,
+    padding: 4,
+    gap: 4,
+    marginBottom: Spacing.five,
+  },
+  themeOptionButton: {
+    flex: 1,
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderRadius: Spacing.two,
+  },
+  themeOptionActive: {
+    backgroundColor: '#7c3aed',
+  },
+  themeOptionText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#64748b',
+  },
+  themeOptionTextActive: {
+    color: '#ffffff',
   },
 });

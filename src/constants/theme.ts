@@ -9,22 +9,36 @@ import { Platform } from 'react-native';
 
 export const Colors = {
   light: {
-    text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
+    text: '#0f172a',             // slate-900
+    background: '#f8fafc',       // slate-50
+    backgroundElement: '#ffffff', // card background
+    backgroundSelected: '#cbd5e1', // slate-300
+    textSecondary: '#475569',     // slate-600
+    border: '#e2e8f0',            // slate-200
+    accent: '#6366f1',            // indigo-500
+  },
+  intermediate: {
+    text: '#f8fafc',              // slate-50
+    background: '#0f172a',        // slate-900
+    backgroundElement: '#1e293b',  // slate-800
+    backgroundSelected: '#334155', // slate-700
+    textSecondary: '#94a3b8',     // slate-400
+    border: 'rgba(255, 255, 255, 0.08)',
+    accent: '#6366f1',
   },
   dark: {
     text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
+    background: '#020617',        // slate-955/dark
+    backgroundElement: 'rgba(15, 23, 42, 0.4)',
+    backgroundSelected: '#1e293b',
+    textSecondary: '#94a3b8',
+    border: 'rgba(255, 255, 255, 0.05)',
+    accent: '#7c3aed',            // violet-500
   },
 } as const;
 
-export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
+export type ThemeType = keyof typeof Colors;
+export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark & keyof typeof Colors.intermediate;
 
 export const Fonts = Platform.select({
   ios: {

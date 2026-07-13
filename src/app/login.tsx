@@ -14,6 +14,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "@/hooks/use-theme";
 
 const loginSchema = z.object({
   login: z.string().min(3, "O login deve ter pelo menos 3 caracteres"),
@@ -26,6 +27,7 @@ export default function LoginScreen() {
   const { login } = useAuth();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const theme = useTheme();
 
   const {
     control,
@@ -56,12 +58,12 @@ export default function LoginScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
+      style={[styles.container, { backgroundColor: theme.background }]}
     >
       <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
-        <View style={styles.card}>
-          <Text style={styles.brandTitle}>GNUTECA</Text>
-          <Text style={styles.brandSubtitle}>Staff Mobile Portal</Text>
+        <View style={[styles.card, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
+          <Text style={[styles.brandTitle, { color: theme.text }]}>GNUTECA</Text>
+          <Text style={[styles.brandSubtitle, { color: theme.textSecondary }]}>Staff Mobile Portal</Text>
 
           {errorMsg && (
             <View style={styles.errorBox}>
@@ -71,15 +73,15 @@ export default function LoginScreen() {
 
           {/* Input de Login */}
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Login</Text>
+            <Text style={[styles.label, { color: theme.textSecondary }]}>Login</Text>
             <Controller
               control={control}
               name="login"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  style={[styles.input, errors.login && styles.inputError]}
+                  style={[styles.input, { backgroundColor: theme.background, borderColor: theme.border, color: theme.text }, errors.login && styles.inputError]}
                   placeholder="Seu identificador (ex: admin)"
-                  placeholderTextColor="#64748b"
+                  placeholderTextColor={theme.textSecondary + "90"}
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
@@ -94,15 +96,15 @@ export default function LoginScreen() {
 
           {/* Input de Senha */}
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Senha</Text>
+            <Text style={[styles.label, { color: theme.textSecondary }]}>Senha</Text>
             <Controller
               control={control}
               name="password"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  style={[styles.input, errors.password && styles.inputError]}
+                  style={[styles.input, { backgroundColor: theme.background, borderColor: theme.border, color: theme.text }, errors.password && styles.inputError]}
                   placeholder="••••••••"
-                  placeholderTextColor="#64748b"
+                  placeholderTextColor={theme.textSecondary + "90"}
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
@@ -118,7 +120,7 @@ export default function LoginScreen() {
 
           {/* Botão de Entrar */}
           <TouchableOpacity
-            style={styles.button}
+            style={[styles.button, { backgroundColor: theme.accent, shadowColor: theme.accent }]}
             onPress={handleSubmit(onSubmit)}
             disabled={loading}
             activeOpacity={0.8}

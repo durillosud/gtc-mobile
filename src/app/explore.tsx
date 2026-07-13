@@ -12,6 +12,7 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import api from "@/services/api";
 import { GtcIcon } from "@/components/icons/GtcIcon";
+import { useTheme } from "@/hooks/use-theme";
 
 interface ScanLog {
   id: string;
@@ -30,12 +31,13 @@ export default function ScannerScreen() {
   const [logs, setLogs] = useState<ScanLog[]>([]);
 
   const safeAreaInsets = useSafeAreaInsets();
+  const theme = useTheme();
 
   if (!permission) {
     // Carregando permissões
     return (
-      <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#7c3aed" />
+      <View style={[styles.centerContainer, { backgroundColor: theme.background }]}>
+        <ActivityIndicator size="large" color={theme.accent} />
       </View>
     );
   }
@@ -43,9 +45,9 @@ export default function ScannerScreen() {
   if (!permission.granted) {
     // Permissão não concedida
     return (
-      <View style={styles.centerContainer}>
-        <Text style={styles.permissionText}>Precisamos de permissão para acessar a câmera.</Text>
-        <TouchableOpacity style={styles.permissionButton} onPress={requestPermission}>
+      <View style={[styles.centerContainer, { backgroundColor: theme.background }]}>
+        <Text style={[styles.permissionText, { color: theme.textSecondary }]}>Precisamos de permissão para acessar a câmera.</Text>
+        <TouchableOpacity style={[styles.permissionButton, { backgroundColor: theme.accent }]} onPress={requestPermission}>
           <Text style={styles.permissionButtonText}>Conceder Acesso</Text>
         </TouchableOpacity>
       </View>
@@ -129,101 +131,109 @@ export default function ScannerScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      {/* 1. Header do Balcão */}
-      <View style={[styles.header, { paddingTop: safeAreaInsets.top + 16 }]}>
-        <Text style={styles.headerTitle}>Balcão de Circulação</Text>
-        <Text style={styles.headerSubtitle}>Leitor de Código de Barras</Text>
-      </View>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
 
-      {/* 2. Câmera Scanner */}
-      <View style={styles.cameraWrapper}>
+      <View style={styles.cameraContainer}>
         <CameraView
           style={StyleSheet.absoluteFillObject}
-          facing="back"
           onBarcodeScanned={isScanning ? handleBarcodeScanned : undefined}
           barcodeScannerSettings={{
-            barcodeTypes: ["qr", "ean13", "code128"],
+            barcodeTypes: ["qr", "ean13", "ean8", "code128"],
           }}
-        />
-        {/* Retículo Visual de Foco */}
-        <View style={styles.overlayContainer}>
-          <View style={styles.viewfinder}>
-            <View style={[styles.corner, styles.topLeft]} />
-            <View style={[styles.corner, styles.topRight]} />
-            <View style={[styles.corner, styles.bottomLeft]} />
-            <View style={[styles.corner, styles.bottomRight]} />
+        >
+          <View style={styles.overlay}>
+            <View style={styles.unfocusedContainer} />
+            <View style={{ flexDirection: "row" }}>
+              <View style={styles.unfocusedContainer} />
+              <View style={styles.viewfinder}>
+                <View style={[styles.corner, styles.topLeft, cornerStyle]} />
+                <View style={[styles.corner, styles.topRight, cornerStyle]} />
+                <View style={[styles.corner, styles.bottomLeft, cornerStyle]} />
+                <View style={[styles.corner, styles.bottomRight, cornerStyle]} />
+              </View>
+              <View style={styles.unfocusedContainer} />
+            </View>
+            <View style={styles.unfocusedContainer} />
           </View>
-        </View>
+        </CameraView>
       </View>
 
-      {/* 3. Seleção de Modo & Estado do Leitor */}
-      <View style={styles.bottomCard}>
-        {/* Alternador de Modo */}
-        <View style={styles.modeToggleContainer}>
+      <View style={[styles.floatingHeader, { paddingTop: safeAreaInsets.top + 12 }]}>
+        <Text style={styles.headerTitle}>Balcão Digital</Text>
+        {loading && <ActivityIndicator size="small" color="#fff" />}
+      </View>
+
+      <View style={[styles.bottomCard, { backgroundColor: theme.background, borderTopColor: theme.border }]}>
+        <View style={[styles.modeToggleContainer, { backgroundColor: theme.backgroundElement }]}>
           <TouchableOpacity
-            style={[styles.modeButton, scanMode === "patron" && styles.modeButtonActive, { flexDirection: "row", gap: 6, alignItems: "center", justifyContent: "center" }]}
+            style={[
+              styles.modeButton,
+              scanMode === "patron" && { backgroundColor: theme.accent },
+              { flexDirection: "row", gap: 6, alignItems: "center", justifyContent: "center" }
+            ]}
             onPress={() => {
               setScanMode("patron");
               setSelectedPatron(null);
             }}
           >
-            <GtcIcon name="users" size={16} color={scanMode === "patron" ? "#fff" : "#64748b"} />
-            <Text style={[styles.modeButtonText, scanMode === "patron" && styles.modeButtonTextActive]}>
+            <GtcIcon name="users" size={16} color={scanMode === "patron" ? "#fff" : theme.textSecondary} />
+            <Text style={[styles.modeButtonText, { color: scanMode === "patron" ? "#fff" : theme.textSecondary }]}>
               Identificar Leitor
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.modeButton, scanMode === "book" && styles.modeButtonActive, { flexDirection: "row", gap: 6, alignItems: "center", justifyContent: "center" }]}
+            style={[
+              styles.modeButton,
+              scanMode === "book" && { backgroundColor: theme.accent },
+              { flexDirection: "row", gap: 6, alignItems: "center", justifyContent: "center" }
+            ]}
             onPress={() => setScanMode("book")}
           >
-            <GtcIcon name="scanner" size={16} color={scanMode === "book" ? "#fff" : "#64748b"} />
-            <Text style={[styles.modeButtonText, scanMode === "book" && styles.modeButtonTextActive]}>
+            <GtcIcon name="scanner" size={16} color={scanMode === "book" ? "#fff" : theme.textSecondary} />
+            <Text style={[styles.modeButtonText, { color: scanMode === "book" ? "#fff" : theme.textSecondary }]}>
               Escanear Livros
             </Text>
           </TouchableOpacity>
         </View>
 
-        {/* Informações do Leitor Selecionado */}
         {selectedPatron ? (
-          <View style={styles.patronCard}>
+          <View style={[styles.patronCard, { backgroundColor: theme.backgroundSelected, borderColor: theme.border }]}>
             <View style={{ flex: 1 }}>
-              <Text style={styles.patronLabel}>Leitor Ativo</Text>
-              <Text style={styles.patronName}>{selectedPatron.name}</Text>
-              <Text style={styles.patronId}>ID: #{selectedPatron.id}</Text>
+              <Text style={[styles.patronLabel, { color: theme.accent }]}>Leitor Ativo</Text>
+              <Text style={[styles.patronName, { color: theme.text }]}>{selectedPatron.name}</Text>
+              <Text style={[styles.patronId, { color: theme.textSecondary }]}>ID: #{selectedPatron.id}</Text>
             </View>
-            <TouchableOpacity style={styles.clearPatronButton} onPress={() => setSelectedPatron(null)}>
-              <Text style={styles.clearPatronText}>Limpar</Text>
+            <TouchableOpacity style={[styles.clearPatronButton, { backgroundColor: theme.backgroundElement }]} onPress={() => setSelectedPatron(null)}>
+              <Text style={[styles.clearPatronText, { color: theme.text }]}>Limpar</Text>
             </TouchableOpacity>
           </View>
         ) : (
-          <View style={styles.noPatronCard}>
-            <Text style={styles.noPatronText}>
+          <View style={[styles.noPatronCard, { borderColor: theme.border, backgroundColor: theme.backgroundElement }]}>
+            <Text style={[styles.noPatronText, { color: theme.textSecondary }]}>
               Nenhum leitor identificado. Escanear livros efetuará uma{" "}
               <Text style={{ color: "#fb7185", fontWeight: "700" }}>Devolução</Text>.
             </Text>
           </View>
         )}
 
-        {/* 4. Logs de Transações Recentes */}
         <View style={styles.logsContainer}>
-          <Text style={styles.logsTitle}>Histórico Recente</Text>
+          <Text style={[styles.logsTitle, { color: theme.textSecondary }]}>Histórico Recente</Text>
           {logs.length === 0 ? (
-            <Text style={styles.emptyLogs}>Nenhuma leitura registrada nesta sessão.</Text>
+            <Text style={[styles.emptyLogs, { color: theme.textSecondary }]}>Nenhuma leitura registrada nesta sessão.</Text>
           ) : (
             logs.map((log) => (
-              <View key={log.id} style={styles.logRow}>
+              <View key={log.id} style={[styles.logRow, { backgroundColor: theme.backgroundElement }]}>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 4, width: 55 }}>
                   <GtcIcon name={log.type === "loan" ? "loan" : "return"} size={14} color={log.type === "loan" ? "#38bdf8" : "#34d399"} />
-                  <Text style={styles.logType}>
+                  <Text style={[styles.logType, { color: theme.textSecondary }]}>
                     {log.type === "loan" ? "EMP" : "DEV"}
                   </Text>
                 </View>
                 <View style={{ flex: 1, marginHorizontal: 12 }}>
-                  <Text style={styles.logBarcode} numberOfLines={1}>
+                  <Text style={[styles.logBarcode, { color: theme.text }]} numberOfLines={1}>
                     {log.barcode}
                   </Text>
-                  <Text style={styles.logMessage} numberOfLines={1}>
+                  <Text style={[styles.logMessage, { color: theme.textSecondary }]} numberOfLines={1}>
                     {log.message}
                   </Text>
                 </View>
