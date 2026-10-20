@@ -87,7 +87,7 @@ export default function LoginScreen() {
                   value={value}
                   autoCapitalize="none"
                   autoCorrect={false}
-                  disabled={loading}
+                  editable={!loading}
                 />
               )}
             />
@@ -111,7 +111,7 @@ export default function LoginScreen() {
                   secureTextEntry
                   autoCapitalize="none"
                   autoCorrect={false}
-                  disabled={loading}
+                  editable={!loading}
                 />
               )}
             />

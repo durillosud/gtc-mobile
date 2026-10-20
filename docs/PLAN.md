@@ -35,7 +35,7 @@ Este documento é a fonte canônica para o estado atual, decisões de projeto e 
 ## 🗺️ Roadmap Executável
 
 ### Épico 1: Autenticação e Sessão BFF
-- [x] Configuração do cliente Axios com `withCredentials: true`.
+- [x] Configuração do cliente Axios com `withCredentials: true` e interceptador de auto-renovação em 401.
 - [x] Criação do `AuthContext` e tipagem do perfil de usuário.
 - [x] Tela de Login com formulário Zod e tratamento de erro de credenciais.
 - [x] Proteção de rotas no layout raiz com verificação de sessão ativa.

@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   Vibration,
   ActivityIndicator,
-  FlatAlignType,
 } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -133,27 +132,21 @@ export default function ScannerScreen() {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
 
-      <View style={styles.cameraContainer}>
+      <View style={styles.cameraWrapper}>
         <CameraView
-          style={StyleSheet.absoluteFillObject}
+          style={StyleSheet.absoluteFill}
           onBarcodeScanned={isScanning ? handleBarcodeScanned : undefined}
           barcodeScannerSettings={{
             barcodeTypes: ["qr", "ean13", "ean8", "code128"],
           }}
         >
-          <View style={styles.overlay}>
-            <View style={styles.unfocusedContainer} />
-            <View style={{ flexDirection: "row" }}>
-              <View style={styles.unfocusedContainer} />
-              <View style={styles.viewfinder}>
-                <View style={[styles.corner, styles.topLeft, cornerStyle]} />
-                <View style={[styles.corner, styles.topRight, cornerStyle]} />
-                <View style={[styles.corner, styles.bottomLeft, cornerStyle]} />
-                <View style={[styles.corner, styles.bottomRight, cornerStyle]} />
-              </View>
-              <View style={styles.unfocusedContainer} />
+          <View style={styles.overlayContainer}>
+            <View style={styles.viewfinder}>
+              <View style={[styles.corner, styles.topLeft, { borderColor: theme.accent }]} />
+              <View style={[styles.corner, styles.topRight, { borderColor: theme.accent }]} />
+              <View style={[styles.corner, styles.bottomLeft, { borderColor: theme.accent }]} />
+              <View style={[styles.corner, styles.bottomRight, { borderColor: theme.accent }]} />
             </View>
-            <View style={styles.unfocusedContainer} />
           </View>
         </CameraView>
       </View>
@@ -309,12 +302,29 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     marginTop: 2,
   },
+  floatingHeader: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 24,
+    paddingBottom: 16,
+    zIndex: 10,
+    backgroundColor: "rgba(15, 23, 42, 0.7)",
+  },
   cameraWrapper: {
     flex: 1,
     position: "relative",
   },
   overlayContainer: {
-    ...StyleSheet.absoluteFillObject,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(2, 6, 23, 0.4)",

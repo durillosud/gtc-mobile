@@ -44,7 +44,7 @@ export default function HomeScreen() {
           </ThemedText>
         </ThemedView>
 
-        <ThemedText type="defaultSemiBold" style={styles.label}>
+        <ThemedText type="smallBold" style={styles.label}>
           Configuração de Tema
         </ThemedText>
 
