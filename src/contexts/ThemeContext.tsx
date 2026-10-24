@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useColorScheme as useRNColorScheme } from 'react-native';
+import * as Linking from 'expo-linking';
 
 export type ThemeType = 'light' | 'intermediate' | 'dark';
 
@@ -15,12 +16,29 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<ThemeType>('dark');
 
   useEffect(() => {
-    // Carrega o tema do sistema na primeira execução
+    // 1. Carrega o tema a partir do deep link de autenticação ou query param (ex: gtc://auth/callback?theme=...)
+    const checkUrlForTheme = (url: string | null) => {
+      if (!url) return;
+      try {
+        const parsed = Linking.parse(url);
+        const paramTheme = parsed.queryParams?.theme as ThemeType;
+        if (paramTheme && (paramTheme === 'light' || paramTheme === 'intermediate' || paramTheme === 'dark')) {
+          setThemeState(paramTheme);
+        }
+      } catch (e) {
+        // Ignora erros de parse de URL
+      }
+    };
+
+    Linking.getInitialURL().then(checkUrlForTheme);
+    const subscription = Linking.addEventListener('url', (event) => checkUrlForTheme(event.url));
+
+    // 2. Fallback para preferência de sistema se não houver tema configurado
     if (systemScheme === 'light') {
-      setThemeState('light');
-    } else {
-      setThemeState('dark');
+      setThemeState((prev) => (prev === 'dark' ? 'light' : prev));
     }
+
+    return () => subscription.remove();
   }, [systemScheme]);
 
   const setTheme = (newTheme: ThemeType) => {
